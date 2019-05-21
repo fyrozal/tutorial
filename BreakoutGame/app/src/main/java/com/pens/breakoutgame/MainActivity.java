@@ -26,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -33,10 +34,15 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
 
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private String TAG = "MainActivity";
 
 
     // gameView will be the view of the game
@@ -49,6 +55,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     AdsCallback mCallback;
 
+
+    private GoogleSignInClient mGoogleSignInClient = null;
+
+    final public int BUTTON_SIGN_IN = 2;
+    final public int BUTTON_SIGN_OUT = 1;
+
+    // Request code used to invoke sign in user interactions.
+    Button signOutButton;
+    SignInButton signInButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,10 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FrameLayout game = new FrameLayout(this);
         LinearLayout gameWidgets = new LinearLayout(this);
 
-        Button endGameButton = new Button(this);
 
-        endGameButton.setWidth(300);
-        endGameButton.setText("Start Game");
 
         //Banner
         AdView adView = new AdView(this);
@@ -107,15 +119,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
 
-//        gameWidgets.addView(myText);
-//        gameWidgets.addView(endGameButton);
+        signOutButton = new Button(this);
+        signOutButton.setId(BUTTON_SIGN_OUT);
+        signOutButton.setWidth(300);
+        signOutButton.setText("Sign Out");
+        signOutButton.setOnClickListener(this);
+
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
+        signInButton = new SignInButton(this);
+        signInButton.setId(BUTTON_SIGN_IN);
+        signInButton.setOnClickListener(this);
+        signInButton.setSize(SignInButton.SIZE_STANDARD);
+
+        gameWidgets.addView(signInButton);
+        gameWidgets.addView(signOutButton);
 
         game.addView(breakoutView);
         game.addView(relativeLayout);
-//        game.addView(gameWidgets);
+        game.addView(gameWidgets);
 
         setContentView(game);
-        endGameButton.setOnClickListener(this);
 
     }
 
@@ -136,8 +160,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void onClick(View v) {
-        Intent intent = new Intent(this, SecondActivity.class);
-        startActivity(intent);
+        switch (v.getId()) {
+            case BUTTON_SIGN_IN:
+               // startSignInIntent();
+                Log.d(TAG,"BUTTON_SIGN_IN");
+                Toast.makeText(this, "Sign In", Toast.LENGTH_SHORT).show();
+                break;
+            case BUTTON_SIGN_OUT:
+               // signOut();
+                Toast.makeText(this, "Sign Out", Toast.LENGTH_SHORT).show();
+                break;
+
+            default:
+                break;
+        }
+
     }
 
 
